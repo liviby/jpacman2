@@ -1,6 +1,7 @@
 package nl.tudelft.jpacman.points;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Properties;
@@ -11,7 +12,7 @@ import java.util.Properties;
  */
 public class PointCalculatorLoader {
 
-    private static Class clazz = null;
+    private static Class<?> clazz = null;
 
     /**
      * Load a points calculator and return it.
@@ -24,13 +25,20 @@ public class PointCalculatorLoader {
                 clazz = loadClassFromFile();
             }
 
-            return (PointCalculator) clazz.newInstance();
-        } catch (Exception e) {
+            // ✅ Updated reflection method (no deprecated warning)
+            return (PointCalculator) clazz.getDeclaredConstructor().newInstance();
+
+        } catch (IOException
+                 | ClassNotFoundException
+                 | InstantiationException
+                 | IllegalAccessException
+                 | InvocationTargetException
+                 | NoSuchMethodException e) {
             throw new RuntimeException("Could not dynamically load the points calculator.", e);
         }
     }
 
-    private Class loadClassFromFile() throws IOException, ClassNotFoundException {
+    private Class<?> loadClassFromFile() throws IOException, ClassNotFoundException {
         String strategyToLoad = getCalculatorClassName();
 
         if ("DefaultPointCalculator".equals(strategyToLoad)) {
@@ -46,9 +54,7 @@ public class PointCalculatorLoader {
 
     private String getCalculatorClassName() throws IOException {
         Properties properties = new Properties();
-
         properties.load(getClass().getClassLoader().getResourceAsStream("scorecalc.properties"));
-
         return properties.getProperty("scorecalculator.name");
     }
 }

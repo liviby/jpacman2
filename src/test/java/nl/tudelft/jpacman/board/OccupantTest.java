@@ -33,7 +33,6 @@ class OccupantTest {
      */
     @Test
     void noStartSquare() {
-        Unit unit = new BasicUnit();
         assertFalse(unit.hasSquare());
     }
 
@@ -44,7 +43,6 @@ class OccupantTest {
     @Test
     void testOccupy() {
         Square square = new BasicSquare();
-        Unit unit = new BasicUnit();
         unit.occupy(square);
         assertEquals(square, unit.getSquare());
         assertTrue(square.getOccupants().contains(unit));
@@ -58,7 +56,6 @@ class OccupantTest {
     void testReoccupy() {
         Square first = new BasicSquare();
         Square second = new BasicSquare();
-        Unit unit = new BasicUnit();
         unit.occupy(first);
         unit.occupy(second);
         assertEquals(second, unit.getSquare());
